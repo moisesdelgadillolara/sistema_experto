@@ -159,8 +159,27 @@ def draw_binary_tree(atomos, operador):
     plt.figure(figsize=(10, 8))
     nx.draw(G, pos, labels=labels, with_labels=True, node_size=500, node_color=[colors[node] for node in G.nodes()], font_size=8, font_weight="bold", edge_color="gray")
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='red')
-    plt.title(f"Árbol Binario para {operador}")
+    plt.title(f"Arbol Binario para {operador}")
     plt.show()
+
+def obtener_regla_texto_natural(regla, atomos):
+    # Dividir la regla en partes
+    partes = regla.split()
+    regla_texto = []
+
+    # Reemplazar las variables por sus correspondientes oraciones
+    for parte in partes:
+        if parte in atomos:
+            regla_texto.append(atomos[parte])
+        else:
+            # Si es un operador, se usa tal cual
+            operador_texto = [key for key, value in operadores.items() if value == parte]
+            if operador_texto:
+                regla_texto.append(operador_texto[0])
+            else:
+                regla_texto.append(parte)
+
+    return ' '.join(regla_texto)
 
 # Función del menú
 def menu():
@@ -189,8 +208,12 @@ def menu():
             check_create_json('reglas.json')
             reglas = load_json('reglas.json')
             reglas.sort()  # Ordena las reglas alfabéticamente
+            check_create_json('atomos.json')
+            atomos = load_json('atomos.json')
             for i, regla in enumerate(reglas):
+                regla_texto_natural = obtener_regla_texto_natural(regla, atomos)
                 print(f"{i+1}) {regla}")
+                print(f"   Regla en texto natural: {regla_texto_natural}")
         elif opcion == '4':
             texto = input("Inserte la regla: ")
             elementos, regla, oraciones_en_regla, operador_actual = expresion_regla(texto)
